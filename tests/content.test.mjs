@@ -77,6 +77,18 @@ test("parallax layers respect reduced-motion preferences", () => {
   assert.match(styles, /@media \(prefers-reduced-motion: reduce\)/);
 });
 
+test("scroll narrative includes progressive reveals and reading cues", () => {
+  const app = readFileSync(new URL("../src/App.tsx", import.meta.url), "utf8");
+  const styles = readFileSync(new URL("../src/styles.css", import.meta.url), "utf8");
+  assert.match(app, /IntersectionObserver/);
+  assert.match(app, /data-reveal="project"/);
+  assert.match(app, /data-timeline/);
+  assert.match(app, /section-indicator/);
+  assert.match(app, /section-cue/);
+  assert.match(styles, /motion-ready/);
+  assert.match(styles, /timeline-progress/);
+});
+
 test("public source does not expose the phone number", () => {
   const files = ["src/content.json", "src/App.tsx", "index.html", "scripts/generate_cv.py"];
   const root = new URL("..", import.meta.url);

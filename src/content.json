@@ -21,6 +21,8 @@
     "navContact": { "fr": "Contact", "en": "Contact" },
     "explore": { "fr": "Explorer mes projets", "en": "Explore my work" },
     "contact": { "fr": "Me contacter", "en": "Get in touch" },
+    "continue": { "fr": "Continuer vers", "en": "Continue to" },
+    "sectionProfile": { "fr": "Profil", "en": "Profile" },
     "downloadCv": { "fr": "Télécharger mon CV", "en": "Download my résumé" },
     "selected": { "fr": "Projets sélectionnés", "en": "Selected work" },
     "selectedIntro": { "fr": "Six systèmes qui racontent ma façon de concevoir : partir d’un problème réel, clarifier l’architecture, instrumenter la qualité et livrer un outil exploitable.", "en": "Six systems that reflect how I build: start from a real problem, clarify the architecture, engineer for quality and ship a usable tool." },
