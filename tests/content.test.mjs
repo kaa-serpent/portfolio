@@ -68,6 +68,15 @@ test("the portfolio uses the full name instead of initials", () => {
   assert.match(app, /Guillaume de Cadoudal/);
 });
 
+test("parallax layers respect reduced-motion preferences", () => {
+  const app = readFileSync(new URL("../src/App.tsx", import.meta.url), "utf8");
+  const styles = readFileSync(new URL("../src/styles.css", import.meta.url), "utf8");
+  assert.match(app, /data-parallax/);
+  assert.match(app, /prefers-reduced-motion: reduce/);
+  assert.match(app, /pointer: coarse/);
+  assert.match(styles, /@media \(prefers-reduced-motion: reduce\)/);
+});
+
 test("public source does not expose the phone number", () => {
   const files = ["src/content.json", "src/App.tsx", "index.html", "scripts/generate_cv.py"];
   const root = new URL("..", import.meta.url);

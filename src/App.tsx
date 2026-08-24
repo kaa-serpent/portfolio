@@ -81,13 +81,51 @@ export default function App() {
   }, [locale, theme]);
 
   useEffect(() => {
-    const updateProgress = () => {
+    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const coarsePointer = window.matchMedia("(pointer: coarse)");
+    let animationFrame = 0;
+
+    const updatePageMotion = () => {
       const total = document.documentElement.scrollHeight - window.innerHeight;
       setProgress(total > 0 ? Math.min(100, (window.scrollY / total) * 100) : 0);
+
+      const layers = document.querySelectorAll<HTMLElement>("[data-parallax]");
+      if (reducedMotion.matches || coarsePointer.matches) {
+        layers.forEach((layer) => layer.style.setProperty("--parallax-y", "0px"));
+        return;
+      }
+
+      const viewportHeight = window.innerHeight;
+      layers.forEach((layer) => {
+        const rect = layer.getBoundingClientRect();
+        const speed = Number(layer.dataset.parallax ?? 0);
+        const position = (viewportHeight / 2 - (rect.top + rect.height / 2)) / (viewportHeight + rect.height);
+        const offset = Math.max(-0.62, Math.min(0.62, position)) * speed;
+        layer.style.setProperty("--parallax-y", `${offset.toFixed(2)}px`);
+      });
     };
-    window.addEventListener("scroll", updateProgress, { passive: true });
-    updateProgress();
-    return () => window.removeEventListener("scroll", updateProgress);
+
+    const requestUpdate = () => {
+      if (animationFrame) return;
+      animationFrame = window.requestAnimationFrame(() => {
+        animationFrame = 0;
+        updatePageMotion();
+      });
+    };
+
+    window.addEventListener("scroll", requestUpdate, { passive: true });
+    window.addEventListener("resize", requestUpdate);
+    reducedMotion.addEventListener("change", requestUpdate);
+    coarsePointer.addEventListener("change", requestUpdate);
+    updatePageMotion();
+
+    return () => {
+      window.removeEventListener("scroll", requestUpdate);
+      window.removeEventListener("resize", requestUpdate);
+      reducedMotion.removeEventListener("change", requestUpdate);
+      coarsePointer.removeEventListener("change", requestUpdate);
+      if (animationFrame) window.cancelAnimationFrame(animationFrame);
+    };
   }, []);
 
   useEffect(() => {
@@ -146,7 +184,7 @@ export default function App() {
               <a className="secondary" href="mailto:guillaumedecadoudal@gmail.com">{text(content.ui.contact, locale)}</a>
             </div>
           </div>
-          <div className="hero-system" aria-hidden="true">
+          <div className="hero-system parallax-layer" data-parallax="72" aria-hidden="true">
             <div className="system-orbit orbit-a"><span>RAG</span></div>
             <div className="system-orbit orbit-b"><span>MCP</span></div>
             <div className="system-orbit orbit-c"><span>DATA</span></div>
@@ -160,8 +198,8 @@ export default function App() {
         <section className="about-section section-pad">
           <div className="container about-grid">
             <h2 className="section-label"><span>00</span>{text(content.profile.role as Localized, locale)}</h2>
-            <p className="about-copy">{text(content.profile.about as Localized, locale)}</p>
-            <div className="stats">
+            <p className="about-copy parallax-layer" data-parallax="24">{text(content.profile.about as Localized, locale)}</p>
+            <div className="stats parallax-layer" data-parallax="-18">
               {content.stats.map((stat) => <div key={stat.value}><strong>{stat.value}</strong><span>{text(stat.label, locale)}</span></div>)}
             </div>
           </div>
@@ -175,7 +213,7 @@ export default function App() {
             </div>
             <div className="featured-grid">
               {content.featured.map((project) => (
-                <button className={`featured-card ${project.media ? "has-media" : ""}`} key={project.id} onClick={() => openProject(project)}>
+                <button className={`featured-card ${project.media ? "has-media" : ""}`} data-parallax={project.index === "03" || project.index === "06" ? "56" : "38"} key={project.id} onClick={() => openProject(project)}>
                   {project.media && <img src={`${import.meta.env.BASE_URL}${project.media}`} alt="" loading="lazy" />}
                   <div className="card-wash" />
                   {!project.media && <div className="card-diagram" aria-hidden="true"><i /><i /><i /></div>}
@@ -197,7 +235,7 @@ export default function App() {
             </div>
             <div className="lab-grid" aria-live="polite">
               {labProjects.map((project) => (
-                <button className="lab-card" key={project.id} onClick={() => openProject(project)}>
+                <button className="lab-card" data-parallax="28" key={project.id} onClick={() => openProject(project)}>
                   {project.media && <div className="lab-card-media"><img src={`${import.meta.env.BASE_URL}${project.media}`} alt="" loading="lazy" /></div>}
                   <div className="lab-card-top"><VisibilityBadge project={project} locale={locale} /><span>↗</span></div>
                   <div><p className="mono">{project.categories.join(" · ")}</p><h3>{project.title}</h3><p>{text(project.overview, locale)}</p></div>
