@@ -55,6 +55,17 @@ test("required public assets exist", () => {
     "public/projects/ollama-mcp.jpg",
     "public/Guillaume_de_Cadoudal_CV_AI_Python_Engineer.pdf",
   ]) assert.ok(existsSync(new URL(path, root)), `${path} is missing`);
+
+  for (const project of [...content.featured, ...content.laboratory]) {
+    assert.ok(project.media, `${project.id}.media is required`);
+    assert.ok(existsSync(new URL(`public/${project.media}`, root)), `${project.media} is missing`);
+  }
+});
+
+test("the portfolio uses the full name instead of initials", () => {
+  const app = readFileSync(new URL("../src/App.tsx", import.meta.url), "utf8");
+  assert.doesNotMatch(app, /G[·.]C/);
+  assert.match(app, /Guillaume de Cadoudal/);
 });
 
 test("public source does not expose the phone number", () => {

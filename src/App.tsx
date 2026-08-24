@@ -40,6 +40,7 @@ function ProjectDialog({ project, locale, onClose }: { project: Project | null; 
             <button className="close-button" type="button" onClick={() => dialogRef.current?.close()} aria-label={text(content.ui.close, locale)}>×</button>
           </div>
           <header className="dialog-header">
+            {project.media && <div className="dialog-media"><img src={`${import.meta.env.BASE_URL}${project.media}`} alt="" /></div>}
             <p className="mono">{project.index ?? "LAB"} · {text(project.subtitle, locale)}</p>
             <h2 id="dialog-title">{project.title}</h2>
             <p className="dialog-overview">{text(project.overview, locale)}</p>
@@ -122,7 +123,7 @@ export default function App() {
       <div className="reading-progress" style={{ transform: `scaleX(${progress / 100})` }} />
       <header className="site-header">
         <nav className="nav container" aria-label={locale === "fr" ? "Navigation principale" : "Main navigation"}>
-          <a className="mark" href="#top" title="Guillaume de Cadoudal — accueil">G·C</a>
+          <a className="mark" href="#top" title="Guillaume de Cadoudal — accueil">Guillaume de Cadoudal</a>
           <div className={`nav-links ${menuOpen ? "is-open" : ""}`}>
             {navItems.map(([label, href]) => <a key={href} href={href} onClick={() => setMenuOpen(false)}>{text(label, locale)}</a>)}
           </div>
@@ -197,6 +198,7 @@ export default function App() {
             <div className="lab-grid" aria-live="polite">
               {labProjects.map((project) => (
                 <button className="lab-card" key={project.id} onClick={() => openProject(project)}>
+                  {project.media && <div className="lab-card-media"><img src={`${import.meta.env.BASE_URL}${project.media}`} alt="" loading="lazy" /></div>}
                   <div className="lab-card-top"><VisibilityBadge project={project} locale={locale} /><span>↗</span></div>
                   <div><p className="mono">{project.categories.join(" · ")}</p><h3>{project.title}</h3><p>{text(project.overview, locale)}</p></div>
                   <div className="tag-list">{project.tech.slice(0, 3).map((item) => <span key={item}>{item}</span>)}</div>
@@ -254,7 +256,7 @@ export default function App() {
         </section>
       </main>
 
-      <footer><div className="container"><a className="mark" href="#top">G·C</a><p>{text(content.ui.footer, locale)}</p><span>© {new Date().getFullYear()}</span></div></footer>
+      <footer><div className="container"><a className="mark" href="#top">Guillaume de Cadoudal</a><p>{text(content.ui.footer, locale)}</p><span>© {new Date().getFullYear()}</span></div></footer>
       <ProjectDialog project={selectedProject} locale={locale} onClose={closeProject} />
     </>
   );
